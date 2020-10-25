@@ -23,24 +23,46 @@ public class ItemGenerator : MonoBehaviour
 
     //MainCameraのオブジェクト
     private GameObject mainCamera;
-  
+
+    //Unityちゃんのオブジェクト
+    private GameObject unityChan;
+
+    //アイテムを最後に生成した時のプレイヤーのZ座標
+    private float lastItemGeneratedUnityChanPositionZ = 80f;
+     
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //一定の距離ごとにアイテムを生成
-        for (int i = startPos; i < goalPos; i += 15)
+       
+
+        //MainCameraのオブジェクトを取得
+        mainCamera = GameObject.Find("Main Camera");
+
+        //Unityちゃんのオブジェを取得
+        unityChan = GameObject.Find("unitychan");
+
+        
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //Unityちゃんの現在地からUnityちゃんの前回の位置を引いて15ｍ以上の時にアイテムを生成
+        if (unityChan.transform.position.z - lastItemGeneratedUnityChanPositionZ > 15)
         {
             //どのアイテムを出すのかをランダムに設定
             int num = Random.Range(1, 11);
+
             if (num <= 2)
             {
                 //コーンをｘ軸方向に一直線に生成
                 for (float j = -1; j <= 1; j += 0.4f)
                 {
                     GameObject cone = Instantiate(conePrefab);
-                    cone.transform.position = new Vector3(4 * j, cone.transform.position.y, i);
+                    cone.transform.position = new Vector3(4 * j, cone.transform.position.y, unityChan.transform.position.z + 40);
 
                 }
             }
@@ -60,31 +82,21 @@ public class ItemGenerator : MonoBehaviour
                     {
                         //コインを生成
                         GameObject coin = Instantiate(coinPrefab);
-                        coin.transform.position = new Vector3(posRange * j, coin.transform.position.y, i + offsetZ);
+                        coin.transform.position = new Vector3(posRange * j, coin.transform.position.y, unityChan.transform.position.z + 40 + offsetZ);
                     }
                     else if (7 <= item && item <= 9)
                     {
                         //車を生成
                         GameObject car = Instantiate(carPrefab);
-                        car.transform.position = new Vector3(posRange * j, car.transform.position.y, i + offsetZ);
-
+                        car.transform.position = new Vector3(posRange * j, car.transform.position.y, unityChan.transform.position.z + 40 + offsetZ);
                     }
 
                 }
             }
+
+            //最後にアイテムを生成した座標の更新(unitytyちゃんの現在地ー前回の生成位置）
+            lastItemGeneratedUnityChanPositionZ = unityChan.transform.position.z;
         }
 
-        //MainCameraのオブジェクトを取得
-        mainCamera = GameObject.Find("Main Camera");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(this.gameObject.transform.position.z < this.mainCamera.transform.position.z)
-        {
-            Destroy(this.gameObject);
-        }
-       
     }
 }
